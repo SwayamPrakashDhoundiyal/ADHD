@@ -122,7 +122,8 @@ async def set_timer(interaction: discord.Interaction, time: int):
     # Define the callback function to unmute users
     async def timer_callback():
         await client.unmute_all_in_voice(guild)
-        await interaction.followup.send("Timer completed! All users in voice channels have been unmuted.")
+        channel = client.get_channel(client.channel)
+        await channel.send("Timer completed! All users in voice channels have been unmuted.")
         client.timers.pop(guild.id, None)  # Remove timer from dictionary
         url = get_cat()
         await interaction.followup.send(url)
@@ -130,6 +131,8 @@ async def set_timer(interaction: discord.Interaction, time: int):
     # Create and start the timer
     timer = Timer(time, timer_callback)
     client.timers[guild.id] = timer
+    channel_id = interaction.channel_id
+    client.channel = channel_id
 
     # Send confirmation
     await interaction.response.send_message(f"Timer set for {time} seconds. All users in voice channels have been muted.")
